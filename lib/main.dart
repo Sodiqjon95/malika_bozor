@@ -5,7 +5,6 @@ import 'package:malika_bozor/presentation/auth/auth_page.dart';
 import 'package:malika_bozor/presentation/hame_page.dart';
 import 'package:malika_bozor/presentation/router.dart';
 import 'package:malika_bozor/utils/constants.dart';
-import 'package:malika_bozor/utils/my_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +17,6 @@ final navigatorKey = GlobalKey<NavigatorState>();
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
