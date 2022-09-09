@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:malika_bozor/utils/constants.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,38 +13,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    var user = context.watch<User?>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "HomePage",
-        ),
+        title: const Text("Home Page"),
         actions: [
-          IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Are you sure you want to log out?"),
-                        actions: [
-                          OutlinedButton(
-                            onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                              Navigator.pop(context);
-                            },
-                            child: Text("Yes"),
-                          ),
-                          OutlinedButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
-                              child: Text("No"))
-                        ],
-                      );
-                    });
-              },
-              icon: Icon(Icons.logout)),
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, profilePage);
@@ -66,10 +40,9 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
             Text(
-              user.email ?? "",
+              user?.email ?? "",
               style: const TextStyle(fontSize: 20),
             ),
-
           ],
         ),
       ),

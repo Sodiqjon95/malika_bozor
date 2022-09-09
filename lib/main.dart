@@ -5,6 +5,8 @@ import 'package:malika_bozor/presentation/auth/auth_page.dart';
 import 'package:malika_bozor/presentation/hame_page.dart';
 import 'package:malika_bozor/presentation/router.dart';
 import 'package:malika_bozor/utils/constants.dart';
+import 'package:malika_bozor/view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,21 +14,34 @@ void main() async {
   runApp(const MyApp());
 }
 
-final navigatorKey = GlobalKey<NavigatorState>();
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        Provider<AuthViewModel>(
+          create: (_) => AuthViewModel(auth: FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) => context.read<AuthViewModel>().authState(),
+          initialData: null,
+        ),
+        StreamProvider(
+          create: (context) => context.read<AuthViewModel>().userInfoChanges,
+          initialData: null,
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        onGenerateRoute: MyRouter.generateRoute,
+        initialRoute: mainPage,
       ),
-      onGenerateRoute: MyRouter.generateRoute,
-      initialRoute: mainPage,
     );
   }
 }
@@ -36,25 +51,10 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, AsyncSnapshot<User?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return const Center(
-            child: Text("Something went wrong!"),
-          );
-        } else if (snapshot.hasData) {
-          var user = snapshot.data!;
-          print("USER:${user.toString()}");
-          return HomePage();
-        } else {
-          return AuthPage();
-        }
-      },
-    );
+    final firebaseUser = context.watch<User?>();
+    if (firebaseUser != null) {
+      return const HomePage();
+    }
+    return const AuthPage();
   }
 }

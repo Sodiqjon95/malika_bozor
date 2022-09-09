@@ -2,7 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:malika_bozor/utils/my_utils.dart';
+import 'package:malika_bozor/view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key, required this.onClickedSignIn}) : super(key: key);
@@ -93,17 +94,12 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> signUp() async {
     final isValid = formKey.currentState!.validate();
     if (!isValid) return;
-
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      MyUtils.showSnackBar(e.message);
-    }
+    context.read<AuthViewModel>().signUp(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+          context: context,
+        );
   }
-
 
   @override
   void dispose() {

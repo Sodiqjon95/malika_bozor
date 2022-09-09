@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:malika_bozor/utils/my_utils.dart';
+import 'package:malika_bozor/view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.onClickSignUp}) : super(key: key);
@@ -83,15 +83,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signIn() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      print("SUCCESS");
-    } on FirebaseAuthException catch (e) {
-      MyUtils.showSnackBar(e.message);
-    }
+    context.read<AuthViewModel>().signIn(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+          context: context,
+        );
   }
 
   @override
